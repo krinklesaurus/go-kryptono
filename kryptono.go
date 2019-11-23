@@ -59,6 +59,7 @@ type Client interface {
 	OrderBook(symbol string) (*OrderBookResp, error)
 	NewOrder(request *NewOrderRequest) (*NewOrderResp, error)
 	TestNewOrder(request *NewOrderRequest) (*TestNewOrderResp, error)
+	OrderDetail(request *OrderDetailRequest) (*OrderDetailResp, error)
 }
 
 type auth struct {

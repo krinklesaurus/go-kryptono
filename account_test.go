@@ -137,3 +137,64 @@ func TestTestNewOrder(t *testing.T) {
 	equal, _ := isEqualJSON(body, string(respBytes))
 	assert.True(t, equal, fmt.Sprintf("%s is not equal to %s", body, string(respBytes)))
 }
+
+func TestOrderDetail(t *testing.T) {
+	pseudoAPIKey := uuid.NewV4()
+	pseudoAPISecret := "4a894c5c-8a7e-4337-bb6b-9fde16e3dddd"
+	body := `{
+		"order_id": "0e3f05e0-912c-4957-9322-d1a34ef6e312",
+		"account_id": "14ce3690-4e86-4f69-8412-b9fd88535f8z",
+		"order_symbol": "KNOW_BTC",
+		"order_side": "SELL",
+		"status": "open",
+		"createTime": 1429514463266,
+		"type": "limit",
+		"order_price": "0.00001234",
+		"order_size": "1000",
+		"executed": "0",
+		"stop_price": "0.00456",
+		"avg": "0.00001234",
+		"total": "0.1234 BTC"
+	  }`
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "POST", r.Method)
+		assert.Equal(t, "/api/v2/order/details", r.URL.String())
+		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
+		assert.Equal(t, "XMLHttpRequest", r.Header.Get(HeaderXRequestedWith))
+
+		assert.Equal(t, pseudoAPIKey.String(), r.Header.Get(HeaderAuthorization))
+		assert.Equal(t, "a111fb0a7c6260451da568116506cb8639e6c9de08b791bb27904c4894faf39a", r.Header.Get(HeaderSignature))
+
+		expectedReqBody := `{
+			"order_id" : "0e3f05e0-912c-4957-9322-d1a34ef6e312",
+			"timestamp" : 1429514463299,
+			"recvWindow" : 5000
+		  }`
+		reqBody, _ := ioutil.ReadAll(r.Body)
+		equal, err := isEqualJSON(expectedReqBody, string(reqBody))
+		assert.Nil(t, err, err)
+		assert.True(t, equal, fmt.Sprintf("%s is not equal to %s", expectedReqBody, string(reqBody)))
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(body))
+	}))
+	defer ts.Close()
+
+	client, err := newClientWithURL(ts.URL, pseudoAPIKey.String(), pseudoAPISecret)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	request := &OrderDetailRequest{
+		OrderID:    "0e3f05e0-912c-4957-9322-d1a34ef6e312",
+		Timestamp:  1429514463299,
+		RecvWindow: 5000,
+	}
+	resp, err := client.OrderDetail(request)
+
+	assert.NotNil(t, resp, fmt.Sprintf("error: %v", err))
+
+	respBytes, _ := json.Marshal(resp)
+	equal, _ := isEqualJSON(body, string(respBytes))
+	assert.True(t, equal, fmt.Sprintf("%s is not equal to %s", body, string(respBytes)))
+}
