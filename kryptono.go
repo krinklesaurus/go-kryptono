@@ -9,14 +9,15 @@ const (
 	generalAPIEndpoint = "https://p.kryptono.exchange/k"
 	marketAPIEndpoint  = "https://engine2.kryptono.exchange"
 	accountAPIEndpoint = "https://p.kryptono.exchange/k"
+	marketsAPIEndpoint = "https://api.kryptono.exchange"
 )
 
 // for testing purposes only
 func newClientWithURL(url string, apiKey string, apiSecret string) (Client, error) {
-	return newClientWithURLs(apiKey, apiSecret, url, url, url)
+	return newClientWithURLs(apiKey, apiSecret, url, url, url, url)
 }
 
-func newClientWithURLs(apiKey string, apiSecret string, generalAPIEndpoint string, marketAPIEndpoint string, accountAPIEndpoint string) (Client, error) {
+func newClientWithURLs(apiKey string, apiSecret string, generalAPIEndpoint string, marketAPIEndpoint string, accountAPIEndpoint string, marketsAPIEndpoint string) (Client, error) {
 	return &client{
 		http: http.DefaultClient,
 		auth: &auth{
@@ -26,12 +27,13 @@ func newClientWithURLs(apiKey string, apiSecret string, generalAPIEndpoint strin
 		generalAPIEndpoint: generalAPIEndpoint,
 		marketAPIEndpoint:  marketAPIEndpoint,
 		accountAPIEndpoint: accountAPIEndpoint,
+		marketsAPIEndpoint: marketsAPIEndpoint,
 	}, nil
 }
 
 // NewClient creates a new kryptono client with apiKey and apiSecret
 func NewClient(apiKey string, apiSecret string) (Client, error) {
-	return newClientWithURLs(apiKey, apiSecret, generalAPIEndpoint, marketAPIEndpoint, accountAPIEndpoint)
+	return newClientWithURLs(apiKey, apiSecret, generalAPIEndpoint, marketAPIEndpoint, accountAPIEndpoint, marketsAPIEndpoint)
 }
 
 type Client interface {
@@ -41,6 +43,7 @@ type Client interface {
 	MarketPrice(symbol string) (MarketPriceResp, error)
 	TradeHistory(symbol string) (*TradeHistoryResp, error)
 	OrderBook(symbol string) (*OrderBookResp, error)
+	MarketSummaries() (*MarketSummariesResp, error)
 	NewOrder(request *NewOrderRequest) (*NewOrderResp, error)
 	TestNewOrder(request *NewOrderRequest) (*TestNewOrderResp, error)
 	OrderDetail(request *OrderDetailRequest) (*OrderDetailResp, error)
@@ -65,6 +68,7 @@ type client struct {
 	generalAPIEndpoint string
 	marketAPIEndpoint  string
 	accountAPIEndpoint string
+	marketsAPIEndpoint string
 }
 
 type Float64Pair [2]float64
