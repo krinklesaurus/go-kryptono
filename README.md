@@ -24,13 +24,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	// get ticker
-	ticker, err := kryptono.GetTicker("ETH_BTC")
+	// get market price
+	marketPrices, err := client.MarketPrice("")
 	if err != nil {
 		fmt.Println(fmt.Sprintf("damn, %v", err))
 		os.Exit(1)
 	}
-	fmt.Println(fmt.Sprintf("ticker %+v", ticker.Result))
+	fmt.Println(fmt.Sprintf("market prices %+v", marketPrices))
 }
 ```
 

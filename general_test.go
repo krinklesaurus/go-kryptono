@@ -201,7 +201,7 @@ func TestMarketPrice(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	resp, err := client.MarketPrice()
+	resp, err := client.MarketPrice("")
 	if err != nil {
 		t.Error(err.Error())
 	}

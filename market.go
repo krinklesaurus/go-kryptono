@@ -32,7 +32,7 @@ type OrderBookResp struct {
 
 func (c *client) TradeHistory(symbol string) (*TradeHistoryResp, error) {
 	url := fmt.Sprintf("%s/api/v1/ht?symbol=%s", c.marketAPIEndpoint, symbol)
-	resp, err := c.sendGet(url, nil)
+	resp, err := c.sendGet(url, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (c *client) TradeHistory(symbol string) (*TradeHistoryResp, error) {
 
 func (c *client) OrderBook(symbol string) (*OrderBookResp, error) {
 	url := fmt.Sprintf("%s/api/v1/dp?symbol=%s", c.marketAPIEndpoint, symbol)
-	resp, err := c.sendGet(url, nil)
+	resp, err := c.sendGet(url, nil, nil)
 	if err != nil {
 		return nil, err
 	}

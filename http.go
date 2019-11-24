@@ -75,11 +75,58 @@ func (c *client) sendPost(url string, additionalHeaders map[string]string, body 
 	return c.sendRequest(req, additionalHeaders)
 }
 
-func (c *client) sendGet(url string, additionalHeaders map[string]string) (*response, error) {
-	req, err := http.NewRequest("GET", url, nil)
+func (c *client) sendGet(url string, additionalHeaders map[string]string, body io.Reader) (*response, error) {
+	var err error
+	var req *http.Request
+	var bodyBytes []byte
+	if body != nil {
+		bodyBytes, err = ioutil.ReadAll(body)
+		if err != nil {
+			return nil, err
+		}
+		req, err = http.NewRequest("GET", url, bytes.NewReader(bodyBytes))
+	} else {
+		req, err = http.NewRequest("GET", url, nil)
+	}
 
 	if err != nil {
 		return &response{}, fmt.Errorf("error creating GET request, %v", err)
+	}
+
+	if additionalHeaders == nil {
+		additionalHeaders = make(map[string]string)
+	}
+
+	if bodyBytes != nil && c.auth != nil {
+		h := hmac.New(sha256.New, []byte(c.auth.APISecret))
+		h.Write(bodyBytes)
+		signature := hex.EncodeToString(h.Sum(nil))
+		additionalHeaders[HeaderSignature] = signature
+	}
+
+	return c.sendRequest(req, additionalHeaders)
+}
+
+func (c *client) sendDelete(url string, additionalHeaders map[string]string, body io.Reader) (*response, error) {
+	bodyBytes, err := ioutil.ReadAll(body)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", url, bytes.NewReader(bodyBytes))
+	if err != nil {
+		return &response{}, fmt.Errorf("error creating DELETE request, %v", err)
+	}
+
+	if additionalHeaders == nil {
+		additionalHeaders = make(map[string]string)
+	}
+
+	if c.auth != nil {
+		h := hmac.New(sha256.New, []byte(c.auth.APISecret))
+		h.Write(bodyBytes)
+		signature := hex.EncodeToString(h.Sum(nil))
+		additionalHeaders[HeaderSignature] = signature
 	}
 
 	return c.sendRequest(req, additionalHeaders)

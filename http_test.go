@@ -52,7 +52,7 @@ func TestSendGet(t *testing.T) {
 		auth: auth,
 	}
 	headers := map[string]string{}
-	_, err := client.sendGet(fmt.Sprintf("%s/%s", ts.URL, "somePath"), headers)
+	_, err := client.sendGet(fmt.Sprintf("%s/%s", ts.URL, "somePath"), headers, nil)
 	if err != nil {
 		t.Errorf("error in SendGet, %v", err)
 	}
@@ -73,7 +73,7 @@ func TestSendGetWithAdditionalHeaders(t *testing.T) {
 		http: &http.Client{},
 		auth: auth,
 	}
-	_, err := client.sendGet(fmt.Sprintf("%s/%s", ts.URL, "somePath"), nil)
+	_, err := client.sendGet(fmt.Sprintf("%s/%s", ts.URL, "somePath"), nil, nil)
 	if err != nil {
 		t.Errorf("error in SendGet, %v", err)
 	}

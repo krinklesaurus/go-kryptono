@@ -58,7 +58,7 @@ type MarketPriceRespElement struct {
 
 func (c *client) Ping() (*PingResp, error) {
 	url := fmt.Sprintf("%s/api/v2/ping", c.generalAPIEndpoint)
-	resp, err := c.sendGet(url, nil)
+	resp, err := c.sendGet(url, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (c *client) Ping() (*PingResp, error) {
 
 func (c *client) ServerTime() (*ServerTimeResp, error) {
 	url := fmt.Sprintf("%s/api/v2/time", c.generalAPIEndpoint)
-	resp, err := c.sendGet(url, nil)
+	resp, err := c.sendGet(url, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (c *client) ServerTime() (*ServerTimeResp, error) {
 
 func (c *client) ExchangeInformation() (*ExchangeInformationResp, error) {
 	url := fmt.Sprintf("%s/api/v2/exchange-info", c.generalAPIEndpoint)
-	resp, err := c.sendGet(url, nil)
+	resp, err := c.sendGet(url, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -128,9 +128,12 @@ func (c *client) ExchangeInformation() (*ExchangeInformationResp, error) {
 	return &result, nil
 }
 
-func (c *client) MarketPrice() (MarketPriceResp, error) {
+func (c *client) MarketPrice(symbol string) (MarketPriceResp, error) {
 	url := fmt.Sprintf("%s/api/v2/market-price", c.generalAPIEndpoint)
-	resp, err := c.sendGet(url, nil)
+	if symbol != "" {
+		url = fmt.Sprintf("%s?symbol=%s", url, symbol)
+	}
+	resp, err := c.sendGet(url, nil, nil)
 	if err != nil {
 		return nil, err
 	}

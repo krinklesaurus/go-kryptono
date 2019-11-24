@@ -8,23 +8,7 @@ import (
 const (
 	generalAPIEndpoint = "https://p.kryptono.exchange/k"
 	marketAPIEndpoint  = "https://engine2.kryptono.exchange"
-	accountAPIEndpoint = ""
-)
-
-const (
-	OrderStatusOpen        = "OPEN"
-	OrderStatusFilled      = "FILLED"
-	OrderStatusPartialFill = "PARTIAL_FILL"
-	OrderStatusCanceled    = "CANCELED"
-	OrderStatusCanceling   = "CANCELING"
-
-	OrderTypeLimit      = "LIMIT"
-	OrderTypeMarket     = "MARKET"
-	OrderTypeStopLoss   = "STOP_LOSS"
-	OrderTypeTakeProfit = "TAKE_PROFIT"
-
-	OrderSideBuy  = "BUY"
-	OrderSideSell = "SELL"
+	accountAPIEndpoint = "https://p.kryptono.exchange/k"
 )
 
 // for testing purposes only
@@ -54,12 +38,20 @@ type Client interface {
 	Ping() (*PingResp, error)
 	ServerTime() (*ServerTimeResp, error)
 	ExchangeInformation() (*ExchangeInformationResp, error)
-	MarketPrice() (MarketPriceResp, error)
+	MarketPrice(symbol string) (MarketPriceResp, error)
 	TradeHistory(symbol string) (*TradeHistoryResp, error)
 	OrderBook(symbol string) (*OrderBookResp, error)
 	NewOrder(request *NewOrderRequest) (*NewOrderResp, error)
 	TestNewOrder(request *NewOrderRequest) (*TestNewOrderResp, error)
 	OrderDetail(request *OrderDetailRequest) (*OrderDetailResp, error)
+	CancelOrder(request *CancelOrderRequest) (*CancelOrderResp, error)
+	TradeDetails(request *TradeDetailsRequest) (*TradeDetailsResp, error)
+	OpenOrders(request *OpenOrdersRequest) (*OpenOrdersResp, error)
+	CompletedOrders(request *CompletedOrdersRequest) (*CompletedOrdersResp, error)
+	AllOrders(request *AllOrdersRequest) (*AllOrdersResp, error)
+	TradeList(request *TradeListRequest) (*TradeListResp, error)
+	AccountInformation(request *AccountInformationRequest) (*AccountInformationResp, error)
+	AccountBalances(request *AccountBalancesRequest) (*AccountBalancesResp, error)
 }
 
 type auth struct {
